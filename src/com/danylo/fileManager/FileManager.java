@@ -8,15 +8,16 @@ public class FileManager {
     public static int calculateFiles(String path) {
         File dir = new File(path);
         int fileCount = 0;
-        if (dir.exists() && dir.isDirectory()) {
-            for (File item : dir.listFiles()) {
-                if (item.isDirectory()) {
-                    fileCount += calculateFiles(item.getAbsolutePath());
+        if (dir.isDirectory()) {
+            try {
+                for (File item : dir.listFiles()) {
+                    if (item.isDirectory()) {
+                        fileCount += calculateFiles(item.getAbsolutePath());
+                    } else {
+                        fileCount++;
+                    }
                 }
-                else {
-                    fileCount++;
-                }
-            }
+            } catch (NullPointerException e) {/*NOP*/}
         }
         return fileCount;
     }
@@ -24,13 +25,15 @@ public class FileManager {
     public static int calculateDirs(String path) {
         File dir = new File(path);
         int dircount = 0;
-        if (dir.exists() && dir.isDirectory()) {
-            for (File item : dir.listFiles()) {
-                if (item.isDirectory()) {
-                    dircount++;
-                    dircount += calculateDirs(item.getAbsolutePath());
+        if (dir.isDirectory()) {
+            try {
+                for (File item : dir.listFiles()) {
+                    if (item.isDirectory()) {
+                        dircount++;
+                        dircount += calculateDirs(item.getAbsolutePath());
+                    }
                 }
-            }
+            } catch (NullPointerException e) {/*NOP*/}
         }
         return dircount;
     }
@@ -47,7 +50,7 @@ public class FileManager {
                 e.printStackTrace();
             }
         }
-        if (src.isDirectory()) {
+        else if (src.isDirectory()) {
             try {
                 File newFolder = new File(to + "/" + src.getName());
                 Files.copy(src.toPath(), newFolder.toPath());
@@ -86,4 +89,8 @@ public class FileManager {
         return true;
     }
 
+    public static void main(String[] args) {
+        int sum = calculateDirs("c:/");
+        System.out.println(sum);
+    }
 }
