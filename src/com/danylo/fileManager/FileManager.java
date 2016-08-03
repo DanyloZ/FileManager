@@ -1,6 +1,8 @@
 package com.danylo.fileManager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -41,9 +43,14 @@ public class FileManager {
     public static boolean copy(String from, String to) {
         File src = new File(from);
         if (src.isFile()) {
-            try {
-                File newFile = new File(to, src.getName());
-                Files.copy(src.toPath(), newFile.toPath());
+            File dest = new File(to, src.getName());
+            try(FileInputStream inputStream = new FileInputStream(src);
+                FileOutputStream outputStream = new FileOutputStream(dest)) {
+                byte[] buff = new byte[1024];
+                int length;
+                while ((length = inputStream.read(buff)) > 0) {
+                    outputStream.write(buff, 0, length);
+                }
                 return true;
             }
             catch (IOException e) {
@@ -87,10 +94,5 @@ public class FileManager {
             file.delete();
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        int sum = calculateDirs("c:/");
-        System.out.println(sum);
     }
 }
